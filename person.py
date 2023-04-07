@@ -12,6 +12,13 @@ class Person:
         self.location = location
         self.max_x = max_x
         self.max_y = max_y
+    
+    def set_belief(self, belief):
+        self.orginal_belief = belief
+        self.current_belief = belief
+
+    def get_belief(self):
+        return self.orginal_belief
 
     def reset_belief(self):
         self.current_belief = self.orginal_belief
@@ -46,6 +53,17 @@ class Person:
         if x < self.max_x - 1 and y < self.max_y - 1:
             neighbors.append([x + 1, y + 1])
         return neighbors
+    
+    def get_neighbors_num(self, matrix):
+        counter = 0
+        neighbors_locations = self.get_neighbors()
+
+        for neighbor in neighbors_locations:
+            x = neighbor[0]
+            y = neighbor[1]
+            if matrix[x][y] is not None:
+                counter += 1
+        return counter
 
     def spread_rumor(self, matrix, l):
         neighbors_with_rumor = []
