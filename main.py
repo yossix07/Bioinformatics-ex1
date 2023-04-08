@@ -44,14 +44,11 @@ def run_with_graph():
     # Take the minimum length of all exposed percentage lists across all runs
     generation_counts.sort()
     min_len = generation_counts[0]
-    max_len = generation_counts[-1]
 
-    for exposed_percentages in exposed_to_rumor_percentages:
-        np.pad(exposed_percentages, (0, max_len - len(exposed_percentages)), 'constant')
 #    min_len = min([len(x) for x in exposed_to_rumor_percentages])
 
     # Take the average of each generation across all runs, up to the minimum length
-    avg_exposed_to_rumor_percentages = [np.mean([x[i] for x in exposed_to_rumor_percentages]) for i in range(max_len)]
+    avg_exposed_to_rumor_percentages = [np.mean([x[i] for x in exposed_to_rumor_percentages]) for i in range(min_len)]
     # avg_has_rumor_percentages = [np.mean([x[i] for x in has_rumor_percentages]) for i in range(min_len)]
 
     # Trim the generation_counts array to match the length of avg_exposed_to_rumor_percentages
