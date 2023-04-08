@@ -44,14 +44,14 @@ class Person:
             neighbors.append([x, y + 1])
         if y > 0:
             neighbors.append([x, y - 1])
-        if x > 0 and y > 0:
-            neighbors.append([x - 1, y - 1])
-        if x < self.max_x - 1 and y > 0:
-            neighbors.append([x + 1, y - 1])
-        if x > 0 and y < self.max_y - 1:
-            neighbors.append([x - 1, y + 1])
-        if x < self.max_x - 1 and y < self.max_y - 1:
-            neighbors.append([x + 1, y + 1])
+        # if x > 0 and y > 0:
+        #     neighbors.append([x - 1, y - 1])
+        # if x < self.max_x - 1 and y > 0:
+        #     neighbors.append([x + 1, y - 1])
+        # if x > 0 and y < self.max_y - 1:
+        #     neighbors.append([x - 1, y + 1])
+        # if x < self.max_x - 1 and y < self.max_y - 1:
+        #     neighbors.append([x + 1, y + 1])
         return neighbors
     
     def get_neighbors_num(self, matrix):
@@ -81,7 +81,11 @@ class Person:
         self.rumor_counter += 1
         if self.rumor_counter > 1:
             self.decrease_rumor()
-        if random.random() < consts.belief_dict[self.current_belief]:
+
+        rand = random.random()
+        b = self.current_belief
+        # print (rand, b)
+        if rand < consts.belief_dict[b]:
             self.set_belive_rumor()
             return True
         return False

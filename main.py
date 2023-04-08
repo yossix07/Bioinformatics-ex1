@@ -1,7 +1,5 @@
 import csv
-
 import numpy as np
-
 from Gui import GridWindow
 from grid import Grid
 import matplotlib.pyplot as plt
@@ -13,60 +11,66 @@ s2_array = [0.2, 0.3, 0.4, 0.1, 0.1, 0.25]
 s3_array = [0.3, 0.4, 0.1, 0.2, 0.5, 0.25]
 s4_array = [0.4, 0.1, 0.2, 0.3, 0.4, 0.25]
 
-num_runs = 10
+num_runs = 4
 
-# def main():
+L = 2
+P = 0.85
+S1 = 0.2
+S2 = 0.3
+S3 = 0.3
+S4 = 0.2
+def run_with_graph():
+    generation_counts = []
+    exposed_to_rumor_percentages = []
+    min_len=0
+    for j in range(num_runs):
+        grid = Grid(L, P, S1, S2, S3, S4)
+        exposed_people = set()
+        generation = 0
+        exposed_percentages = []
+        has_rumor_percentages = []
+        current_j_has_rumor_percentage = []
+        while grid.run():
+            exposed_to_rumor_percentage = grid.exposed_rumor_precentage()
+            exposed_percentages.append(exposed_to_rumor_percentage)
+            generation += 1
+            currnet_has_rumor_percentage = grid.has_rumor_precentage()
+            current_j_has_rumor_percentage.append(currnet_has_rumor_percentage)
 
-#     generation_counts = []
-#     exposed_to_rumor_percentages = []
-#     min_len=0
-#     L = 2
-#     P = 0.5
-#     S1 = 0.25
-#     S2 = 0.3
-#     S3 = 0.3
-#     S4 = 0.15
-#     for j in range(num_runs):
-         
-#         grid = Grid(L, P, S1, S2, S3, S4)
-#         exposed_people = set()
-#         generation = 0
-#         exposed_percentages = []
+        has_rumor_percentages.append(current_j_has_rumor_percentage)
+        exposed_to_rumor_percentages.append(exposed_percentages)
+        generation_counts.append(generation)
+        
+    # Take the minimum length of all exposed percentage lists across all runs
+    generation_counts.sort()
+    min_len = generation_counts[0]
+    max_len = generation_counts[-1]
 
-#         while grid.run():
-#             exposed_to_rumor_percentage = grid.exposed_rumor_precentage()
-#             exposed_percentages.append(exposed_to_rumor_percentage)
-#             generation += 1
+    for exposed_percentages in exposed_to_rumor_percentages:
+        np.pad(exposed_percentages, (0, max_len - len(exposed_percentages)), 'constant')
+#    min_len = min([len(x) for x in exposed_to_rumor_percentages])
 
-#         exposed_to_rumor_percentages.append(exposed_percentages)
-#         generation_counts.append(generation)
+    # Take the average of each generation across all runs, up to the minimum length
+    avg_exposed_to_rumor_percentages = [np.mean([x[i] for x in exposed_to_rumor_percentages]) for i in range(max_len)]
+    # avg_has_rumor_percentages = [np.mean([x[i] for x in has_rumor_percentages]) for i in range(min_len)]
 
-#     # Take the minimum length of all exposed percentage lists across all runs
-#     generation_counts.sort()
-#     min_len = generation_counts[0]
-# #    min_len = min([len(x) for x in exposed_to_rumor_percentages])
+    # Trim the generation_counts array to match the length of avg_exposed_to_rumor_percentages
+    #generation_counts = generation_counts[:min_len]
+    #create a list
+    print(min_len)
+    num_of_generations = [i for i in range(min_len)]
 
-#     # Take the average of each generation across all runs, up to the minimum length
-#     avg_exposed_to_rumor_percentages = [np.mean([x[i] for x in exposed_to_rumor_percentages]) for i in range(min_len)]
-
-#     # Trim the generation_counts array to match the length of avg_exposed_to_rumor_percentages
-#     #generation_counts = generation_counts[:min_len]
-#     #create a list
-#     print(min_len)
-#     num_of_generations = [i for i in range(min_len)]
-
-#     # Plot the results
-#     plt.plot(num_of_generations, avg_exposed_to_rumor_percentages)
-#     plt.title(f'parameters: P={P}, L={L},S1={S1},S2={S2}, S3={S3}, S4={S4} ')
-#     plt.ylabel('Average Exposed to Rumor Percentage')
-#     plt.xlabel('Number of Generations')
-#     plt.show()
+    # Plot the results
+    plt.plot(num_of_generations, avg_exposed_to_rumor_percentages)
+    plt.title(f'parameters: P={P}, L={L},S1={S1},S2={S2}, S3={S3}, S4={S4} ')
+    plt.ylabel('Average Exposed to Rumor Percentage')
+    plt.xlabel('Number of Generations')
+    plt.show()
 
 
-def main():
-
+def run_with_gui():
     exposed_people = set()
-    grid = Grid(2, 1, 0.25, 0.25, 0.25, 0.25, "slowSpread")
+    grid = Grid(L, P, S1, S2, S3, S4)
     window = GridWindow()
     generation = 0
     while window.running():
@@ -84,4 +88,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_with_graph()

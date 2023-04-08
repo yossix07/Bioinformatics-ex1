@@ -17,6 +17,8 @@ class Grid:
         s2_number = int(p * self.grid_size * s2_precent)
         s3_number = int(p * self.grid_size * s3_precent)
         s4_number = int(p * self.grid_size * s4_precent)
+
+        print(s1_number, s2_number, s3_number, s4_number)
         
         if mode == 'random':
             chosen_location = self.init_at_random_locations(s1_number, s2_number, s3_number, s4_number)
@@ -37,7 +39,7 @@ class Grid:
             if idx == random_location:
                 chosen_location = [row_idx, col_idx]
 
-            person_belief = None
+            person_belief = 3
             if s1_number > 0:
                 person_belief = 1
                 s1_number -= 1
@@ -110,8 +112,10 @@ class Grid:
 
         round = deque([1, 2, 3, 4])
 
+        is_break = False
         for i in range(consts.Size):
             diagonal = [self.matrix[j][j+i] for j in range(consts.Size-i) if self.matrix[j][j+i] is not None]
+            diagonal1 = [self.matrix[j+i][j] for j in range(consts.Size-i) if self.matrix[j+i][j] is not None]
             for person in diagonal:
                 person.set_belief(round[0])
                 # print(person.location[0], person.location[1], round[0])
@@ -120,32 +124,33 @@ class Grid:
                     if s1_number == 0:
                         round.popleft()
                 if len(round) == 0:
+                    is_break = True
                     break
                 if round[0] == 2:
                     s2_number -= 1
                     if s2_number == 0:
                         round.popleft()
                 if len(round) == 0:
+                    is_break = True
                     break
                 if round[0] == 3:
                     s3_number -= 1
                     if s3_number == 0:
                         round.popleft()
                 if len(round) == 0:
+                    is_break = True
                     break
                 if round[0] == 4:
                     s4_number -= 1
                     if s4_number == 0:
                         round.popleft()
+                if len(round) == 0:
+                    is_break = True
+                    break
                 round.rotate(-1)
-
-        print(round)
-        is_break = False
-        for i in range(1, consts.Size):
             if is_break:
                 break
-            diagonal = [self.matrix[j+i][j] for j in range(consts.Size-i) if self.matrix[j+i][j] is not None]
-            for person in diagonal:
+            for person in diagonal1:
                 person.set_belief(round[0])
                 # print(person.location[0], person.location[1], round[0])
                 if round[0] == 1:
@@ -177,6 +182,48 @@ class Grid:
                     is_break = True
                     break
                 round.rotate(-1)
+            if is_break:
+                break
+            
+
+        # print(round)
+        # is_break = False
+        # for i in range(1, consts.Size):
+        #     if is_break:
+        #         break
+        #     diagonal = [self.matrix[j+i][j] for j in range(consts.Size-i) if self.matrix[j+i][j] is not None]
+        #     for person in diagonal:
+        #         person.set_belief(round[0])
+        #         # print(person.location[0], person.location[1], round[0])
+        #         if round[0] == 1:
+        #             s1_number -= 1
+        #             if s1_number == 0:
+        #                 round.popleft()
+        #         if len(round) == 0:
+        #             is_break = True
+        #             break
+        #         if round[0] == 2:
+        #             s2_number -= 1
+        #             if s2_number == 0:
+        #                 round.popleft()
+        #         if len(round) == 0:
+        #             is_break = True
+        #             break
+        #         if round[0] == 3:
+        #             s3_number -= 1
+        #             if s3_number == 0:
+        #                 round.popleft()
+        #         if len(round) == 0:
+        #             is_break = True
+        #             break
+        #         if round[0] == 4:
+        #             s4_number -= 1
+        #             if s4_number == 0:
+        #                 round.popleft()
+        #         if len(round) == 0:
+        #             is_break = True
+        #             break
+        #         round.rotate(-1)
         return chosen_location
 
 
