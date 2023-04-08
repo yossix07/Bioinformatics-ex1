@@ -39,19 +39,13 @@ class Grid:
             if idx == random_location:
                 chosen_location = [row_idx, col_idx]
 
+            s_numbers = [s1_number, s2_number, s3_number, s4_number]
             person_belief = 3
-            if s1_number > 0:
-                person_belief = 1
-                s1_number -= 1
-            elif s2_number > 0:
-                person_belief = 2
-                s2_number -= 1
-            elif s3_number > 0:
-                person_belief = 3
-                s3_number -= 1
-            elif s4_number > 0:
-                person_belief = 4
-                s4_number -= 1
+            for i, s_num in enumerate(s_numbers):
+                if s_num > 0:
+                    person_belief = i + 1
+                    s_numbers[i] -= 1
+                    break
             self.matrix[row_idx][col_idx] = Person(person_belief, [row_idx, col_idx], consts.Size, consts.Size)
         return chosen_location
 
@@ -67,34 +61,20 @@ class Grid:
             self.matrix[row_idx][col_idx] = Person(2, [row_idx, col_idx], consts.Size, consts.Size)
 
         round = deque([1, 2, 3, 4])
+        belief_counts = {1: s1_number, 2: s2_number, 3: s3_number, 4: s4_number}
 
         for row in range(consts.Size):
             for col in range(consts.Size):
                 if self.matrix[row][col] is not None:
-                    self.matrix[row][col].set_belief(round[0])
-                    print(row,col, round[0])
-                    if round[0] == 1:
-                        s1_number -= 1
-                        if s1_number == 0:
+                    belief_num = round[0]
+                    self.matrix[row][col].set_belief(belief_num)
+                    print(row, col, belief_num)
+                    if belief_num in belief_counts:
+                        belief_counts[belief_num] -= 1
+                        if belief_counts[belief_num] == 0:
                             round.popleft()
-                    if len(round) == 0:
-                        break
-                    if round[0] == 2:
-                        s2_number -= 1
-                        if s2_number == 0:
-                            round.popleft()
-                    if len(round) == 0:
-                        break
-                    if round[0] == 3:
-                        s3_number -= 1
-                        if s3_number == 0:
-                            round.popleft()
-                    if len(round) == 0:
-                        break
-                    if round[0] == 4:
-                        s4_number -= 1
-                        if s4_number == 0:
-                            round.popleft()
+                        if len(round) == 0:
+                            break
                     round.rotate(-1)
         return chosen_location        
     
