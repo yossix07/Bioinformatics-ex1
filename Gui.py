@@ -83,7 +83,6 @@ class GridWindow:
             # Draw title
             self.screen.blit(title_text, (self.size[0]/2 - title_text.get_width()/2, 30))
 
-
             # Update the display
             pygame.display.flip()
 
@@ -115,7 +114,7 @@ class GridWindow:
             text_surface = FONT.render(error_msg, True, consts.BLACK)
             self.screen.blit(text_surface, (240, 550))
         print(error_msg)
-        return False
+        return False, l, p, s1, s2, s3, s4
     
 
     def is_float(self, string):
