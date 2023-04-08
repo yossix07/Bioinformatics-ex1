@@ -14,11 +14,11 @@ s4_array = [0.4, 0.1, 0.2, 0.3, 0.4, 0.25]
 num_runs = 12
 generation_runs = 250
 L = 3
-P = 0.65
-S1 = 0.35
-S2 = 0.4
-S3 = 0.15
-S4 = 0.1
+P = 1
+S1 = 0
+S2 = 0
+S3 = 0.05
+S4 = 0.95
 def run_with_graph():
     generation_counts = []
     exposed_to_rumor_percentages = []
@@ -86,4 +86,4 @@ def run_with_gui():
 
 
 if __name__ == "__main__":
-    run_with_graph()
+    run_with_gui()

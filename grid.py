@@ -33,14 +33,14 @@ class Grid:
     def init_at_random_locations(self, s1_number, s2_number, s3_number, s4_number):
         random_indices = np.random.choice(consts.Size * consts.Size, int(self.p * self.grid_size), replace=False)
         random_location = np.random.choice(random_indices)
+        s_numbers = [s1_number, s2_number, s3_number, s4_number]
         for idx in random_indices:
             row_idx = idx // consts.Size
             col_idx = idx % consts.Size
             if idx == random_location:
                 chosen_location = [row_idx, col_idx]
 
-            s_numbers = [s1_number, s2_number, s3_number, s4_number]
-            person_belief = 3
+            person_belief = 4
             for i, s_num in enumerate(s_numbers):
                 if s_num > 0:
                     person_belief = i + 1

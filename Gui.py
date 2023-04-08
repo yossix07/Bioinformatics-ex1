@@ -5,32 +5,32 @@ import consts
 class GridWindow:
     def __init__(self):
         pygame.init()
-        FONT = pygame.font.Font(None, 32)
-        input_boxes = [
-        pygame.Rect(200, 200, 200, 32),  # P
-        pygame.Rect(200, 250, 200, 32),  # L
-        pygame.Rect(200, 300, 200, 32),  # S1
-        pygame.Rect(200, 350, 200, 32),  # S2
-        pygame.Rect(200, 400, 200, 32),  # S3
-        pygame.Rect(200, 450, 200, 32),  # S4
-        ]
+    #     FONT = pygame.font.Font(None, 32)
+    #     input_boxes = [
+    #     pygame.Rect(200, 200, 200, 32),  # P
+    #     pygame.Rect(200, 250, 200, 32),  # L
+    #     pygame.Rect(200, 300, 200, 32),  # S1
+    #     pygame.Rect(200, 350, 200, 32),  # S2
+    #     pygame.Rect(200, 400, 200, 32),  # S3
+    #     pygame.Rect(200, 450, 200, 32),  # S4
+    #     ]
 
-        # Define the default input values
-        input_values = ["", "", "", "", "", ""]
+    #     # Define the default input values
+    #     input_values = ["", "", "", "", "", ""]
 
-        # Define the start button
-        start_button = pygame.Rect(200, 500, 200, 50)
+    #     # Define the start button
+    #     start_button = pygame.Rect(200, 500, 200, 50)
 
-    # Define the text labels
-        labels = [
-        FONT.render("P:", True, consts.BLACK),
-        FONT.render("L:", True, consts.BLACK),
-        FONT.render("S1:", True, consts.BLACK),
-        FONT.render("S2:", True, consts.BLACK),
-        FONT.render("S3:", True, consts.BLACK),
-        FONT.render("S4:", True, consts.BLACK),
-        FONT.render("Start", True, consts.BLACK),
-        ]
+    # # Define the text labels
+    #     labels = [
+    #     FONT.render("P:", True, consts.BLACK),
+    #     FONT.render("L:", True, consts.BLACK),
+    #     FONT.render("S1:", True, consts.BLACK),
+    #     FONT.render("S2:", True, consts.BLACK),
+    #     FONT.render("S3:", True, consts.BLACK),
+    #     FONT.render("S4:", True, consts.BLACK),
+    #     FONT.render("Start", True, consts.BLACK),
+    #     ]
 
         self.size = (1000, 1000)
         self.screen = pygame.display.set_mode(self.size)
