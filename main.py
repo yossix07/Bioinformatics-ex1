@@ -68,21 +68,23 @@ def run_with_graph():
 
 def run_with_gui():
     exposed_people = set()
-    grid = Grid(L, P, S1, S2, S3, S4)
-    window = GridWindow()
-    generation = 0
-    while window.running():
-    #while grid.run():
-        window.check_if_done()
-        grid.run()
-        exposed_to_rumor_percentage = grid.exposed_rumor_precentage()
-        #print(exposed_to_rumor_percentage)
+    gui = GridWindow()
+    is_start, l, p, s1, s2, s3, s4 = gui.run_menu()
+    if is_start:
+        grid = Grid(l, p, s1, s2, s3, s4)
+        generation = 0
+        while gui.running():
+        #while grid.run():
+            gui.check_if_done()
+            grid.run()
+            exposed_to_rumor_percentage = grid.exposed_rumor_precentage()
+            #print(exposed_to_rumor_percentage)
 
-        window.draw(grid)
-        generation += 1
+            gui.draw(grid, "belief")
+            generation += 1
 
-    window.exit()
-    has_rumor_percentage = grid.has_rumor_precentage()
+        gui.exit()
+        has_rumor_percentage = grid.has_rumor_precentage()
 
 
 if __name__ == "__main__":
