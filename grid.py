@@ -219,13 +219,13 @@ class Grid:
         #self.current_rumor_exposed = self.current_rumor_exposed.union(exposed_to_rumor)
         #print(f'exposed: {len(self.current_rumor_exposed)}')
         self.has_rumor_list = self.has_rumor_list.union(current_round_rumor_set)
-        if self.state is not None and len(self.has_rumor_list) == len(self.state):
-            self.same_state_counter += 1
-        else:
-            self.same_state_counter = 0
+        # if self.state is not None and len(self.has_rumor_list) == len(self.state):
+        #     self.same_state_counter += 1
+        # else:
+        #     self.same_state_counter = 0
 
-        if self.same_state_counter == 100:
-            return False
+        # if self.same_state_counter == 100:
+        #     return False
 
         for i in range(0, consts.Size):
             for j in range(0, consts.Size):
