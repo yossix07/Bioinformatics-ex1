@@ -130,30 +130,30 @@ class GridWindow:
         matrix = grid.get_matrix()
         self.screen.fill(consts.WHITE)
         square_size = 10
-        #counter=0
         for i in range(0, consts.Size):
             for j in range(0, consts.Size):
                 x1 = i * square_size
                 y1 = j * square_size
                 if matrix[i][j] is None:
-                    pygame.draw.rect(self.screen, consts.WHITE, (x1, y1, square_size, square_size), 0)
+                    pass
                 elif colorMode == "has_rumor":
                     if matrix[i][j].get_has_rumor():
-                        #counter += 1
-                        pygame.draw.rect(self.screen, consts.RED, (x1, y1, square_size, square_size), 0)
+                        color = consts.RED
                     else:
-                        pygame.draw.rect(self.screen, consts.GREEN, (x1, y1, square_size, square_size), 0)
+                        color = consts.GREEN
+                    pygame.draw.rect(self.screen, color, (x1, y1, square_size, square_size), 0)
 
                 # draw by belief level
                 elif colorMode == "belief":
                     if matrix[i][j].get_belief() == 1:
-                        pygame.draw.rect(self.screen, consts.RED, (x1, y1, square_size, square_size), 0)
+                        color = consts.GREEN
                     elif matrix[i][j].get_belief() == 2:
-                        pygame.draw.rect(self.screen, consts.GREEN, (x1, y1, square_size, square_size), 0)
+                        color = consts.PINK
                     elif matrix[i][j].get_belief() == 3:
-                        pygame.draw.rect(self.screen, consts.BLACK, (x1, y1, square_size, square_size), 0)
+                        color = consts.RED
                     elif matrix[i][j].get_belief() == 4:
-                        pygame.draw.rect(self.screen, consts.PINK, (x1, y1, square_size, square_size), 0)
+                        color = consts.BLACK
+                    pygame.draw.rect(self.screen, color, (x1, y1, square_size, square_size), 0)
 
         #print(counter)
         pygame.display.flip()

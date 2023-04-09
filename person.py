@@ -81,11 +81,7 @@ class Person:
         self.rumor_counter += 1
         if self.rumor_counter > 1:
             self.decrease_rumor()
-
-        rand = random.random()
-        b = self.current_belief
-        # print (rand, b)
-        if rand < consts.belief_dict[b]:
+        if random.random() < consts.belief_dict[self.current_belief]:
             self.set_belive_rumor()
             return True
         return False
