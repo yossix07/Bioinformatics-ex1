@@ -166,7 +166,7 @@ class Grid:
 
         for corner_num, s_num in [(1, s1_number), (2, s2_number), (3, s1_number), (4, s4_number)]:
             if s_num > 1:
-                round.append(corner_num)
+                round_order.append(corner_num)
 
         for i in range(consts.Size):
             if not round_order:
