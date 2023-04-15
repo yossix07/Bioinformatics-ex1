@@ -15,14 +15,12 @@ class Grid:
         self.state = None
         self.wrap_around = wrap_around
 
-
         s1_number = int(p * self.grid_size * s1_precent)
         s2_number = int(p * self.grid_size * s2_precent)
         s3_number = int(p * self.grid_size * s3_precent)
         s4_number = int(p * self.grid_size * s4_precent)
 
         print(s1_number, s2_number, s3_number, s4_number)
-
         if mode == 'random':
             chosen_location = self.init_at_random_locations(s1_number, s2_number, s3_number, s4_number)
         if mode == 'slowSpread':
@@ -35,26 +33,7 @@ class Grid:
         self.has_rumor_list = {self.first_person}
         self.current_rumor_exposed = {self.first_person}
 
-    def init_at_random_locations(self, s1_number, s2_number, s3_number, s4_number):
-        random_indices = np.random.choice(consts.Size * consts.Size, int(self.p * self.grid_size), replace=False)
-        random_location = np.random.choice(random_indices)
-        s_numbers = [s1_number, s2_number, s3_number, s4_number]
-        for idx in random_indices:
-            row_idx = idx // consts.Size
-            col_idx = idx % consts.Size
-            if idx == random_location:
-                chosen_location = [row_idx, col_idx]
-
-            person_belief = 4
-            for i, s_num in enumerate(s_numbers):
-                if s_num > 0:
-                    person_belief = i + 1
-                    s_numbers[i] -= 1
-                    break
-            self.matrix[row_idx][col_idx] = Person(person_belief, [row_idx, col_idx], consts.Size, consts.Size)
-        return chosen_location
-
-    def init_slow_spread_noam_cohen(self, s1_number, s2_number, s3_number, s4_number):
+    def generate_persons_at_random_locations(self):
         random_indices = np.random.choice(consts.Size * consts.Size, int(self.p * self.grid_size), replace=False)
         random_location = np.random.choice(random_indices)
         for idx in random_indices:
@@ -62,53 +41,12 @@ class Grid:
             col_idx = idx % consts.Size
             if idx == random_location:
                 chosen_location = [row_idx, col_idx]
+            self.matrix[row_idx][col_idx] = Person(4, [row_idx, col_idx], consts.Size, consts.Size)
 
-            self.matrix[row_idx][col_idx] = Person(1, [row_idx, col_idx], consts.Size, consts.Size)
-        
-        middle = int(consts.Size / 2)
-        assigned_people = []
-        for row in range(middle):
-            for col in range(middle):
-                current = self.matrix[row][col]
-                if current and s1_number > 0:
-                    assigned_people.append(current)
-                    self.matrix[row][col].set_belief(1)
-                    s1_number -= 1
-                elif current and s4_number > 0:
-                    assigned_people.append(current)
-                    self.matrix[row][col].set_belief(4)
-                    s4_number -= 1
-        
-        for row in range(middle, consts.Size):
-            for col in range(middle, consts.Size):
-                current = self.matrix[row][col]
-                if current and s3_number > 0:
-                    assigned_people.append(current)
-                    self.matrix[row][col].set_belief(3)
-                    s3_number -= 1
-
-        for row in range(middle):
-            for col in range(middle, consts.Size):
-                current = self.matrix[row][col]
-                if current and s4_number > 0:
-                    assigned_people.append(current)
-                    self.matrix[row][col].set_belief(4)
-                    s4_number -= 1
-
-        for row in range(middle, consts.Size):
-            for col in range(middle):
-                current = self.matrix[row][col]
-                if current and s4_number > 0:
-                    assigned_people.append(current)
-                    self.matrix[row][col].set_belief(4)
-                    s4_number -= 1
-                elif current and s2_number > 0:
-                    assigned_people.append(current)
-                    self.matrix[row][col].set_belief(2)
-                    s2_number -= 1
-
-        s_numbers = [s1_number, s2_number, s3_number, s4_number]
-        for idx in random_indices:
+        return random_indices, chosen_location
+    
+    def assign_beliefs_by_order(self, indices, assigned_people, s_numbers):
+        for idx in indices:
             row_idx = idx // consts.Size
             col_idx = idx % consts.Size
             current = self.matrix[row_idx][col_idx]
@@ -119,43 +57,50 @@ class Grid:
                         s_numbers[i] -= 1
                         current.set_belief(person_belief)
                         break
+    
+    def assign_beliefs_by_blocks(self, row_start, row_end, col_start, col_end, assigned_people, s_numbers, beliefs):
+        for row in range(row_start, row_end):
+            for col in range(col_start, col_end):
+                current = self.matrix[row][col]
+                if current:
+                    for index, (s_num, belief) in enumerate(zip(s_numbers, beliefs)):
+                        if s_num > 0:
+                            s_numbers[index] -= 1
+                            assigned_people.append(current)
+                            current.set_belief(belief)
+                            break
+        return s_numbers
+
+    def init_at_random_locations(self, s1_number, s2_number, s3_number, s4_number):
+        random_indices, chosen_location = self.generate_persons_at_random_locations()
+        s_numbers = [s1_number, s2_number, s3_number, s4_number]
+        self.assign_beliefs_by_order(random_indices, [], s_numbers)
+        return chosen_location
+
+    def init_slow_spread_blocks(self, s1_number, s2_number, s3_number, s4_number):
+        random_indices, chosen_location = self.generate_persons_at_random_locations()
+        middle = int(consts.Size / 2)
+        assigned_people = []
+        s1_number, s4_number = self.assign_beliefs_by_blocks(0, middle, 0, middle, assigned_people, [s1_number, s4_number], [1, 4])
+        s3_number = self.assign_beliefs_by_blocks(middle, consts.Size, middle, consts.Size, assigned_people, [s3_number], [3])[0]
+        s4_number = self.assign_beliefs_by_blocks(0, middle, middle, consts.Size, assigned_people, [s4_number], [4])[0]
+        s4_number, s2_number = self.assign_beliefs_by_blocks(middle, consts.Size, 0, middle, assigned_people, [s4_number, s2_number], [4, 2])
+        s_numbers = [s1_number, s2_number, s3_number, s4_number]
+        self.assign_beliefs_by_order(random_indices, assigned_people, s_numbers)
         return chosen_location
                     
     
-
     def init_slow_spread(self, s1_number, s2_number, s3_number, s4_number):
-        random_indices = np.random.choice(consts.Size * consts.Size, int(self.p * self.grid_size), replace=False)
-        random_location = np.random.choice(random_indices)        
-        for idx in random_indices:
-            row_idx = idx // consts.Size
-            col_idx = idx % consts.Size
-            if idx == random_location:
-                chosen_location = [row_idx, col_idx]
-            
-            self.matrix[row_idx][col_idx] = Person(4, [row_idx, col_idx], consts.Size, consts.Size)
-        
+        random_indices, chosen_location = self.generate_persons_at_random_locations()
+       
         s_numbers = [s1_number, s2_number, s3_number, s4_number]
 
         corner_order = deque([])
 
-        if s1_number > 0:
-            corner_order.append(1)
-            corner_order.append(1)
-
-        if s2_number > 0:
-            corner_order.append(2)
-
-        if s3_number > 0:
-            corner_order.append(3)
-            corner_order.append(3)
-
-        if s1_number > 0:
-            corner_order.append(1)
-            corner_order.append(1)
-
-        if s4_number > 0:
-            corner_order.append(4)
-            corner_order.append(4)
+        for corner_num, s_num in [(1, s1_number), (2, s2_number), (1, s1_number), (4, s4_number)]:
+            if s_num > 1:
+                corner_order.append(corner_num)
+                corner_order.append(corner_num)
 
         limit = consts.Size - 1
         border_limit = 40
@@ -225,39 +170,6 @@ class Grid:
                         s_numbers[i] -= 1
                         current.set_belief(person_belief)
                         break
-
-        # the rest in round robin format
-        # round_order = deque([])
-
-        # if s1_number > 0:
-        #     round_order.append(1)
-        # if s2_number > 0:
-        #     round_order.append(2)
-        # if s3_number > 0:
-        #     round_order.append(3)
-        # if s4_number > 0:
-        #     round_order.append(4)
-        #     round_order.append(4)
-
-        # for row in range(consts.Size):
-        #     for col in range(consts.Size):
-        #         current = self.matrix[row][col]
-        #         if current and current not in assigned_people:
-        #             if not round_order:
-        #                 break
-        #             belief = round_order[0]
-        #             current.set_belief(belief)
-
-        #             s_number_idx = belief - 1
-        #             s_numbers[s_number_idx] -= 1
-
-        #             if s_numbers[s_number_idx] <= 0:
-        #                 while belief in round_order:
-        #                     round_order.remove(belief)
-        #             else:
-        #                 round_order.rotate(-1)
-
-        # print(s_numbers)
         return chosen_location
 
     def init_fast_spread(self, s1_number, s2_number, s3_number, s4_number):
@@ -299,14 +211,12 @@ class Grid:
         return chosen_location
 
     def init_fast_spread_diagonal(self, s1_number, s2_number, s3_number, s4_number):
-        # Choose random indices for the initial infected people
         random_indices = np.random.choice(consts.Size * consts.Size, int(self.p * self.grid_size), replace=False)
         random_location = np.random.choice(random_indices)
         chosen_location = None
 
         s_numbers = [s1_number, s2_number, s3_number, s4_number]
 
-        # Create a Person object at each index and assign them to the matrix
         for idx in random_indices:
             row_idx = idx // consts.Size
             col_idx = idx % consts.Size
