@@ -13,7 +13,6 @@ class GridWindow:
         self.input_values = [default_p, default_l, default_s1, default_s2, default_s3, default_s4]
 
     def run_menu(self):
-        
         # set up the font for the title
         title_font = pygame.font.SysFont(None, 55)
         title_text = title_font.render("Welcome To Rumor Spread Simulator!", True, consts.GREEN)
@@ -155,7 +154,6 @@ class GridWindow:
                         color = consts.BLACK
                     pygame.draw.rect(self.screen, color, (x1, y1, square_size, square_size), 0)
 
-        #print(counter)
         pygame.display.flip()
         self.clock.tick(60)
 

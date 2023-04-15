@@ -1,4 +1,3 @@
-from random import randint
 import consts
 import numpy as np
 from person import Person
@@ -29,7 +28,7 @@ class Grid:
         if mode == 'slowSpread':
             chosen_location = self.init_slow_spread(s1_number, s2_number, s3_number, s4_number)
         if mode == 'fastSpread':
-            chosen_location = self.init_fast_spread_diagonal(s1_number, s2_number, s3_number, s4_number)
+            chosen_location = self.init_fast_spread(s1_number, s2_number, s3_number, s4_number)
 
         self.matrix[chosen_location[0]][chosen_location[1]].set_belive_rumor()
         self.first_person = self.matrix[chosen_location[0]][chosen_location[1]]
@@ -55,7 +54,7 @@ class Grid:
             self.matrix[row_idx][col_idx] = Person(person_belief, [row_idx, col_idx], consts.Size, consts.Size)
         return chosen_location
 
-    def init_slow_spread(self, s1_number, s2_number, s3_number, s4_number):
+    def init_slow_spread_noam_cohen(self, s1_number, s2_number, s3_number, s4_number):
         random_indices = np.random.choice(consts.Size * consts.Size, int(self.p * self.grid_size), replace=False)
         random_location = np.random.choice(random_indices)
         for idx in random_indices:
@@ -65,7 +64,76 @@ class Grid:
                 chosen_location = [row_idx, col_idx]
 
             self.matrix[row_idx][col_idx] = Person(1, [row_idx, col_idx], consts.Size, consts.Size)
+        
+        middle = int(consts.Size / 2)
+        assigned_people = []
+        for row in range(middle):
+            for col in range(middle):
+                current = self.matrix[row][col]
+                if current and s1_number > 0:
+                    assigned_people.append(current)
+                    self.matrix[row][col].set_belief(1)
+                    s1_number -= 1
+                elif current and s4_number > 0:
+                    assigned_people.append(current)
+                    self.matrix[row][col].set_belief(4)
+                    s4_number -= 1
+        
+        for row in range(middle, consts.Size):
+            for col in range(middle, consts.Size):
+                current = self.matrix[row][col]
+                if current and s3_number > 0:
+                    assigned_people.append(current)
+                    self.matrix[row][col].set_belief(3)
+                    s3_number -= 1
 
+        for row in range(middle):
+            for col in range(middle, consts.Size):
+                current = self.matrix[row][col]
+                if current and s4_number > 0:
+                    assigned_people.append(current)
+                    self.matrix[row][col].set_belief(4)
+                    s4_number -= 1
+
+        for row in range(middle, consts.Size):
+            for col in range(middle):
+                current = self.matrix[row][col]
+                if current and s4_number > 0:
+                    assigned_people.append(current)
+                    self.matrix[row][col].set_belief(4)
+                    s4_number -= 1
+                elif current and s2_number > 0:
+                    assigned_people.append(current)
+                    self.matrix[row][col].set_belief(2)
+                    s2_number -= 1
+
+        s_numbers = [s1_number, s2_number, s3_number, s4_number]
+        for idx in random_indices:
+            row_idx = idx // consts.Size
+            col_idx = idx % consts.Size
+            current = self.matrix[row_idx][col_idx]
+            if current and current not in assigned_people:
+                for i, s_num in enumerate(s_numbers):
+                    if s_num > 0:
+                        person_belief = i + 1
+                        s_numbers[i] -= 1
+                        current.set_belief(person_belief)
+                        break
+        return chosen_location
+                    
+    
+
+    def init_slow_spread(self, s1_number, s2_number, s3_number, s4_number):
+        random_indices = np.random.choice(consts.Size * consts.Size, int(self.p * self.grid_size), replace=False)
+        random_location = np.random.choice(random_indices)        
+        for idx in random_indices:
+            row_idx = idx // consts.Size
+            col_idx = idx % consts.Size
+            if idx == random_location:
+                chosen_location = [row_idx, col_idx]
+            
+            self.matrix[row_idx][col_idx] = Person(4, [row_idx, col_idx], consts.Size, consts.Size)
+        
         s_numbers = [s1_number, s2_number, s3_number, s4_number]
 
         corner_order = deque([])
@@ -76,19 +144,21 @@ class Grid:
 
         if s2_number > 0:
             corner_order.append(2)
-            corner_order.append(2)
 
         if s3_number > 0:
             corner_order.append(3)
             corner_order.append(3)
 
+        if s1_number > 0:
+            corner_order.append(1)
+            corner_order.append(1)
+
         if s4_number > 0:
-            corner_order.append(4)
             corner_order.append(4)
             corner_order.append(4)
 
         limit = consts.Size - 1
-        border_limit = int(consts.Size / 3)
+        border_limit = 40
         assigned_people = []
         for col in range(border_limit):
             top_left_corner = [self.matrix[row][col] for row in range(border_limit) if self.matrix[row][col]]
@@ -142,22 +212,21 @@ class Grid:
                 assigned_people.append(person)
                 person.set_belief(belief)
                 s_numbers[s_number_idx] -= 1
-
-        print(s_numbers)
-        counter = 0
+        
+        # the rest in random order
         for idx in random_indices:
             row_idx = idx // consts.Size
             col_idx = idx % consts.Size
             current = self.matrix[row_idx][col_idx]
             if current and current not in assigned_people:
-                counter += 1
                 for i, s_num in enumerate(s_numbers):
                     if s_num > 0:
                         person_belief = i + 1
                         s_numbers[i] -= 1
                         current.set_belief(person_belief)
                         break
-        print(counter)
+
+        # the rest in round robin format
         # round_order = deque([])
 
         # if s1_number > 0:
