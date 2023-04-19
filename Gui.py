@@ -91,9 +91,9 @@ class GridWindow:
             self.screen.blit(FONT.render("Start", True, consts.BLACK), (start_button.x + 70, start_button.y + 15))
 
             if self.wrap_around:
-                pygame.draw.rect(self.screen, consts.RED, wrap_around_check_box)
+                pygame.draw.rect(self.screen, consts.GREEN, wrap_around_check_box)
             else:
-               pygame.draw.rect(self.screen, consts.GREEN, wrap_around_check_box)
+                pygame.draw.rect(self.screen, consts.RED, wrap_around_check_box)
 
             # Draw title
             self.screen.blit(title_text, (self.size[0] / 2 - title_text.get_width() / 2, 30))
