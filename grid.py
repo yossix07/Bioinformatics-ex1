@@ -20,7 +20,6 @@ class Grid:
         s3_number = int(p * self.grid_size * s3_precent)
         s4_number = int(p * self.grid_size * s4_precent)
 
-        print(s1_number, s2_number, s3_number, s4_number)
         if mode == 'random':
             chosen_location = self.init_at_random_locations(s1_number, s2_number, s3_number, s4_number)
         if mode == 'slowSpread':
@@ -154,7 +153,6 @@ class Grid:
         for corner_num, s_num in [(1, s1_number), (2, s2_number), (3, s1_number), (4, s4_number)]:
             if s_num > 1:
                 round.append(corner_num)
-
         belief_counts = {1: s1_number, 2: s2_number, 3: s3_number, 4: s4_number}
 
         for row in range(consts.Size):

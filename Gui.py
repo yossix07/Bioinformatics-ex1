@@ -132,7 +132,6 @@ class GridWindow:
             text_surface = FONT.render(error_msg, True, consts.RED)
             self.screen.blit(text_surface, (50, 600))
             pygame.display.flip()
-        print(error_msg)
         return False, l, p, s1, s2, s3, s4, self.wrap_around
 
     # returns True if the input string is a floating point number
@@ -151,7 +150,6 @@ class GridWindow:
         matrix = grid.get_matrix()
         self.screen.fill(consts.WHITE)
         square_size = self.size[0] / consts.Size
-        print(square_size)
         for i in range(0, consts.Size):
             for j in range(0, consts.Size):
                 x1 = i * square_size
