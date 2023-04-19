@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 from time import sleep
 import consts
 
-run_gui = False
-
+run_gui = True
 
 # generate graphs for the report part
 def generate_graph():
@@ -47,14 +46,14 @@ def generate_graph():
 # runs the simulation
 def simulator_gui():
     gui = GridWindow(f'{consts.P}', f'{consts.L}', f'{consts.S1}', f'{consts.S2}', f'{consts.S3}', f'{consts.S4}')
-    is_start, l, p, s1, s2, s3, s4 = gui.run_menu()
+    is_start, l, p, s1, s2, s3, s4, wrap_around = gui.run_menu()
     if is_start:
-        grid = Grid(l, p, s1, s2, s3, s4, consts.wrap_around, consts.mode)
+        grid = Grid(l, p, s1, s2, s3, s4, wrap_around, consts.modeFast)
         while gui.running():
             gui.check_if_done()
             grid.run()
             grid.exposed_rumor_precentage()
-            gui.draw(grid)
+            gui.draw(grid, consts.visual)
 
         gui.exit()
     else:

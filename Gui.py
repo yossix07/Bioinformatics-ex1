@@ -1,36 +1,44 @@
 import pygame
 import consts
 
-
 class GridWindow:
     # initialize the window with the given properties
     def __init__(self, default_p="0.5", default_l="2", default_s1="0.25", default_s2="0.25", default_s3="0.25",
                  default_s4="0.25"):
         pygame.init()
-        self.size = (1000, 1000)
+        screen_info = pygame.display.Info()
+        self.width, self.height = screen_info.current_w, screen_info.current_h
+        min_size = min(self.width, self.height) * 0.9
+        self.size = (min_size, min_size)
         self.screen = pygame.display.set_mode(self.size)
         pygame.display.set_caption("Rumor Simulation")
         self.done = False
         self.clock = pygame.time.Clock()
         self.input_values = [default_p, default_l, default_s1, default_s2, default_s3, default_s4]
+        self.wrap_around = False
 
+    # toggle the wrap around value
+    def toggle_wrap_around(self):
+        self.wrap_around = not self.wrap_around
+    
     # dispaly menu and handle menu events
     def run_menu(self):
         # set up the font for the title
         title_font = pygame.font.SysFont(None, 55)
         title_text = title_font.render("Welcome To Rumor Spread Simulator!", True, consts.GREEN)
 
-        FONT = pygame.font.Font(None, 32)
-        input_boxes = [
-            pygame.Rect(200, 200, 200, 32),  # P
-            pygame.Rect(200, 250, 200, 32),  # L
-            pygame.Rect(200, 300, 200, 32),  # S1
-            pygame.Rect(200, 350, 200, 32),  # S2
-            pygame.Rect(200, 400, 200, 32),  # S3
-            pygame.Rect(200, 450, 200, 32),  # S4
-        ]
+        starting_x = 200
+        starting_y = 200
+        input_width = 200
+        input_height = 32
+        margin = 50
 
-        start_button = pygame.Rect(200, 500, 200, 50)
+        FONT = pygame.font.Font(None, 32)
+
+        input_boxes = [ pygame.Rect(starting_x, starting_y + i * margin, input_width, input_height) for i in range(len(self.input_values)) ]
+
+        wrap_around_check_box = pygame.Rect(starting_x + 66, starting_y + len(input_boxes) * margin, 50, 50)
+        start_button = pygame.Rect(starting_x, starting_y + (len(input_boxes) + 2) * margin, 200, 50)
 
         labels = [
             FONT.render("P:", True, consts.BLACK),
@@ -39,6 +47,8 @@ class GridWindow:
             FONT.render("S2:", True, consts.BLACK),
             FONT.render("S3:", True, consts.BLACK),
             FONT.render("S4:", True, consts.BLACK),
+            FONT.render("Wrap-Around:", True, consts.BLACK),
+
         ]
         running = True
         while running:
@@ -48,6 +58,8 @@ class GridWindow:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     # Check if the start button was clicked
+                    if wrap_around_check_box.collidepoint(event.pos):
+                        self.toggle_wrap_around()
                     if start_button.collidepoint(event.pos):
                         return self.handle_start_button()
 
@@ -72,10 +84,16 @@ class GridWindow:
             # Draw the labels
             for i, label in enumerate(labels):
                 self.screen.blit(label, (100, 200 + 50 * i))
+            
 
             # Draw the start button
             pygame.draw.rect(self.screen, consts.GREEN, start_button)
             self.screen.blit(FONT.render("Start", True, consts.BLACK), (start_button.x + 70, start_button.y + 15))
+
+            if self.wrap_around:
+                pygame.draw.rect(self.screen, consts.RED, wrap_around_check_box)
+            else:
+               pygame.draw.rect(self.screen, consts.GREEN, wrap_around_check_box)
 
             # Draw title
             self.screen.blit(title_text, (self.size[0] / 2 - title_text.get_width() / 2, 30))
@@ -101,7 +119,7 @@ class GridWindow:
             s3 = float(s3)
             s4 = float(s4)
             if s1 + s2 + s3 + s4 == 1:
-                return True, l, p, s1, s2, s3, s4
+                return True, l, p, s1, s2, s3, s4, self.wrap_around
             else:
                 error_msg = "Error: The sum of S1, S2, S3, and S4 must equal 1.... Existing...."
                 FONT = pygame.font.Font(None, 32)
@@ -115,7 +133,7 @@ class GridWindow:
             self.screen.blit(text_surface, (50, 600))
             pygame.display.flip()
         print(error_msg)
-        return False, l, p, s1, s2, s3, s4
+        return False, l, p, s1, s2, s3, s4, self.wrap_around
 
     # returns True if the input string is a floating point number
     def is_float(self, string):
@@ -132,7 +150,8 @@ class GridWindow:
     def draw(self, grid, colorMode="has_rumor"):
         matrix = grid.get_matrix()
         self.screen.fill(consts.WHITE)
-        square_size = 10
+        square_size = self.size[0] / consts.Size
+        print(square_size)
         for i in range(0, consts.Size):
             for j in range(0, consts.Size):
                 x1 = i * square_size
