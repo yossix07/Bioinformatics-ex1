@@ -7,7 +7,8 @@ class Person:
     def __init__(self, orginal_belief, location, max_x, max_y):
         self.orginal_belief = orginal_belief
         self.current_belief = orginal_belief
-        self.has_rumor = False
+        self.has_rumor_currently = False
+        self.has_rumor_all_time = False
         self.rumor_counter = 0
         self.l = 0
         self.location = location
@@ -77,7 +78,7 @@ class Person:
         exposed_neighbors = set()
         if self.l == 0:
             self.l = l
-            self.has_rumor = False
+            self.has_rumor_currently = False
             for neighbor in self.get_neighbors(wrap_around):
                 neighbor_x, neighbor_y = neighbor
                 exposed_neighbors.add(matrix[neighbor_x][neighbor_y])
@@ -103,8 +104,9 @@ class Person:
 
     # The person now believes the rumor.
     def get_has_rumor(self):
-        return self.has_rumor
+        return self.has_rumor_all_time
 
     # The person now believes the rumor.
     def set_belive_rumor(self):
-        self.has_rumor = True
+        self.has_rumor_currently = True
+        self.has_rumor_all_time = True
