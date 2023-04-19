@@ -1,6 +1,7 @@
 import random
 import consts
 
+
 class Person:
     # Initializes a person object with given properties.
     def __init__(self, orginal_belief, location, max_x, max_y):
@@ -12,6 +13,7 @@ class Person:
         self.location = location
         self.max_x = max_x
         self.max_y = max_y
+        #self.believed_to_rumor
 
     # Sets the original and current belief level of the person.
     def set_belief(self, belief):
@@ -21,7 +23,7 @@ class Person:
     # Returns the original belief level of the person.
     def get_belief(self):
         return self.orginal_belief
-    
+
     # Resets the current belief level of the person and rumor counter.
     def reset_belief(self):
         self.current_belief = self.orginal_belief
@@ -69,28 +71,30 @@ class Person:
                     counter += 1
         return counter
 
-
     # Spread the rumor to the person's neighbors.
     def spread_rumor(self, matrix, l, wrap_around):
         neighbors_with_rumor = []
         exposed_neighbors = set()
         if self.l == 0:
             self.l = l
+            self.has_rumor = False
             for neighbor in self.get_neighbors(wrap_around):
                 neighbor_x, neighbor_y = neighbor
                 exposed_neighbors.add(matrix[neighbor_x][neighbor_y])
-                if matrix[neighbor_x][neighbor_y] != None and matrix[neighbor_x][neighbor_y].got_rumor():
+                if matrix[neighbor_x][neighbor_y] is not None and matrix[neighbor_x][neighbor_y].got_rumor():
                     neighbors_with_rumor.append(matrix[neighbor_x][neighbor_y])
         return neighbors_with_rumor, exposed_neighbors
 
-    # The person recives a rumor.
+    # The person receives a rumor.
     def got_rumor(self):
-        self.rumor_counter += 1
-        if self.rumor_counter > 1:
-            self.decrease_rumor()
-        if random.random() < consts.belief_dict[self.current_belief]:
-            self.set_belive_rumor()
-            return True
+        if self.l == 0:
+            self.rumor_counter += 1
+            if self.rumor_counter > 1:
+                self.decrease_rumor()
+            if random.random() < consts.belief_dict[self.current_belief]:
+                self.set_belive_rumor()
+                return True
+            return False
         return False
 
     # Decreases the person's belief level(with lower boundary of 1)

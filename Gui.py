@@ -1,9 +1,11 @@
 import pygame
 import consts
 
+
 class GridWindow:
     # initialize the window with the given properties
-    def __init__(self, default_p="0.5", default_l="2", default_s1="0.25", default_s2="0.25", default_s3="0.25", default_s4="0.25"):
+    def __init__(self, default_p="0.5", default_l="2", default_s1="0.25", default_s2="0.25", default_s3="0.25",
+                 default_s4="0.25"):
         pygame.init()
         self.size = (1000, 1000)
         self.screen = pygame.display.set_mode(self.size)
@@ -48,7 +50,7 @@ class GridWindow:
                     # Check if the start button was clicked
                     if start_button.collidepoint(event.pos):
                         return self.handle_start_button()
-                        
+
                 elif event.type == pygame.KEYDOWN:
                     # Check if a key was pressed while an input box was selected
                     for i, box in enumerate(input_boxes):
@@ -74,9 +76,9 @@ class GridWindow:
             # Draw the start button
             pygame.draw.rect(self.screen, consts.GREEN, start_button)
             self.screen.blit(FONT.render("Start", True, consts.BLACK), (start_button.x + 70, start_button.y + 15))
-            
+
             # Draw title
-            self.screen.blit(title_text, (self.size[0]/2 - title_text.get_width()/2, 30))
+            self.screen.blit(title_text, (self.size[0] / 2 - title_text.get_width() / 2, 30))
 
             # Update the display
             pygame.display.flip()
@@ -90,7 +92,8 @@ class GridWindow:
         s3 = self.input_values[4]
         s4 = self.input_values[5]
 
-        if l.isnumeric() and self.is_float(l) and self.is_float(s1) and self.is_float(s2) and self.is_float(s3) and self.is_float(s4):
+        if l.isnumeric() and self.is_float(l) and self.is_float(s1) and self.is_float(s2) and self.is_float(
+                s3) and self.is_float(s4):
             p = float(p)
             l = int(l)
             s1 = float(s1)
@@ -113,7 +116,7 @@ class GridWindow:
             pygame.display.flip()
         print(error_msg)
         return False, l, p, s1, s2, s3, s4
-    
+
     # returns True if the input string is a floating point number
     def is_float(self, string):
         if string.count('.') <= 1 and string.replace(".", "").isnumeric():

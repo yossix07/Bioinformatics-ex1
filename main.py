@@ -5,21 +5,22 @@ import matplotlib.pyplot as plt
 from time import sleep
 import consts
 
-run_gui = True
+run_gui = False
+
 
 # generate graphs for the report part
 def generate_graph():
     exposed_to_rumor_percentages = []
     has_rumor_percentages = []
     for j in range(consts.num_runs):
-        grid = Grid(consts.L, consts.P, consts.S1, consts.S2, 
-                    consts.S3, consts.S4, consts.wrap_around, consts.mode)
+        grid = Grid(consts.L, consts.P, consts.S1, consts.S2,
+                    consts.S3, consts.S4, consts.wrap_around)
         generation = 0
         exposed_percentages = []
         current_j_has_rumor_percentage = []
         while generation < consts.generation_runs:
             grid.run()
-            
+
             exposed_to_rumor_percentage = grid.exposed_rumor_precentage()
             exposed_percentages.append(exposed_to_rumor_percentage)
 
@@ -30,14 +31,15 @@ def generate_graph():
         has_rumor_percentages.append(current_j_has_rumor_percentage)
         exposed_to_rumor_percentages.append(exposed_percentages)
 
-    avg_exposed_to_rumor_percentages = [np.mean([x[i] for x in exposed_to_rumor_percentages]) for i in range(consts.generation_runs)]
+    avg_exposed_to_rumor_percentages = [np.mean([x[i] for x in exposed_to_rumor_percentages]) for i in
+                                        range(consts.generation_runs)]
     avg_has_rumor_percentages = [np.mean([x[i] for x in has_rumor_percentages]) for i in range(consts.generation_runs)]
 
     num_of_generations = [i for i in range(consts.generation_runs)]
 
-    plt.plot(num_of_generations, avg_has_rumor_percentages)
+    plt.plot(num_of_generations, avg_exposed_to_rumor_percentages)
     plt.title(f'parameters: P={consts.P}, L={consts.L},S1={consts.S1},S2={consts.S2}, S3={consts.S3}, S4={consts.S4} ')
-    plt.ylabel('Average Believe to Rumor Percentage')
+    plt.ylabel('Average exposed to Rumor Percentage')
     plt.xlabel('Number of Generations')
     plt.show()
 
@@ -52,11 +54,11 @@ def simulator_gui():
             gui.check_if_done()
             grid.run()
             grid.exposed_rumor_precentage()
-            gui.draw(grid, consts.visual)
-    
+            gui.draw(grid)
+
         gui.exit()
     else:
-        sleep(3)   
+        sleep(3)
 
 
 if __name__ == "__main__":

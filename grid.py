@@ -6,7 +6,7 @@ from collections import deque
 
 class Grid:
     # initialize the grid with the given parameters
-    def __init__(self, l, p, s1_precent, s2_precent, s3_precent, s4_precent,wrap_around, mode='random'):
+    def __init__(self, l, p, s1_precent, s2_precent, s3_precent, s4_precent, wrap_around, mode='random'):
         self.matrix = [[None for _ in range(consts.Size)] for _ in range(consts.Size)]
         self.l = l
         self.p = p
@@ -24,9 +24,9 @@ class Grid:
         if mode == 'random':
             chosen_location = self.init_at_random_locations(s1_number, s2_number, s3_number, s4_number)
         if mode == 'slowSpread':
-            chosen_location = self.init_slow_spread(s1_number, s2_number, s3_number, s4_number)
+            chosen_location = self.init_slow_spread_blocks(s1_number, s2_number, s3_number, s4_number)
         if mode == 'fastSpread':
-            chosen_location = self.init_fast_spread_diagonal(s1_number, s2_number, s3_number, s4_number)
+            chosen_location = self.init_fast_spread(s1_number, s2_number, s3_number, s4_number)
 
         self.matrix[chosen_location[0]][chosen_location[1]].set_belive_rumor()
         self.first_person = self.matrix[chosen_location[0]][chosen_location[1]]
@@ -46,7 +46,7 @@ class Grid:
             self.matrix[row_idx][col_idx] = Person(2, [row_idx, col_idx], consts.Size, consts.Size)
 
         return random_indices, chosen_location
-    
+
     # assign beliefs to the unassigned people by s_numbers priority order
     def assign_beliefs_by_order(self, indices, assigned_people, s_numbers):
         for idx in indices:
@@ -60,7 +60,7 @@ class Grid:
                         s_numbers[i] -= 1
                         current.set_belief(person_belief)
                         break
-    
+
     # assign beliefs to the unassigned people by blocks order
     def assign_beliefs_by_blocks(self, row_start, row_end, col_start, col_end, assigned_people, s_numbers, beliefs):
         for row in range(row_start, row_end):
@@ -89,14 +89,17 @@ class Grid:
         random_indices, chosen_location = self.generate_persons_at_random_locations()
         middle = int(consts.Size / 2)
         assigned_people = []
-        s1_number, s4_number = self.assign_beliefs_by_blocks(0, middle, 0, middle, assigned_people, [s1_number, s4_number], [1, 4])
-        s3_number = self.assign_beliefs_by_blocks(middle, consts.Size, middle, consts.Size, assigned_people, [s3_number], [3])[0]
+        s1_number, s4_number = self.assign_beliefs_by_blocks(0, middle, 0, middle, assigned_people,
+                                                             [s1_number, s4_number], [1, 4])
+        s3_number = \
+        self.assign_beliefs_by_blocks(middle, consts.Size, middle, consts.Size, assigned_people, [s3_number], [3])[0]
         s4_number = self.assign_beliefs_by_blocks(0, middle, middle, consts.Size, assigned_people, [s4_number], [4])[0]
-        s4_number, s2_number = self.assign_beliefs_by_blocks(middle, consts.Size, 0, middle, assigned_people, [s4_number, s2_number], [4, 2])
+        s4_number, s2_number = self.assign_beliefs_by_blocks(middle, consts.Size, 0, middle, assigned_people,
+                                                             [s4_number, s2_number], [4, 2])
         s_numbers = [s1_number, s2_number, s3_number, s4_number]
         self.assign_beliefs_by_order(random_indices, assigned_people, s_numbers)
         return chosen_location
-                    
+
     # init the grid where all s1 people in corner blocks and the rest are in the middle.
     # returns the starting rumor location.
     def init_slow_spread(self, s1_number, s2_number, s3_number, s4_number):
@@ -136,17 +139,16 @@ class Grid:
                 assigned_people.append(person)
                 person.set_belief(belief)
                 s_numbers[s_number_idx] -= 1
-        
+
         self.assign_beliefs_by_order(random_indices, assigned_people, s_numbers)
         return chosen_location
-
 
     # init the grid with people in random locations and assign beliefs in round roubin order
     # on the grid's rows.
     # returns the starting rumor location.
     def init_fast_spread(self, s1_number, s2_number, s3_number, s4_number):
         random_indices, chosen_location = self.generate_persons_at_random_locations()
-        
+
         round = deque([])
 
         for corner_num, s_num in [(1, s1_number), (2, s2_number), (3, s1_number), (4, s4_number)]:
@@ -209,7 +211,7 @@ class Grid:
         current_round_rumor_set = set()
 
         for person in self.has_rumor_list:
-            believers_to_rumor, exposed_to_rumor = person.spread_rumor(self.matrix, self.l,self.wrap_around)
+            believers_to_rumor, exposed_to_rumor = person.spread_rumor(self.matrix, self.l, self.wrap_around)
             current_round_rumor_set.update(believers_to_rumor)
             self.current_rumor_exposed = self.current_rumor_exposed.union(exposed_to_rumor)
 
@@ -235,7 +237,7 @@ class Grid:
     # returns the precentage of people the has been exposed to the rumor
     def exposed_rumor_precentage(self):
         return (len(self.current_rumor_exposed) / (self.p * self.grid_size)) * 100
-    
+
     # returns list of people which are inside the square and list of people which are on the square edge.
     def get_square_people(self, col, square_size, limit):
         top_left_corner = [self.matrix[row][col] for row in range(square_size) if self.matrix[row][col]]
@@ -243,31 +245,31 @@ class Grid:
         top_left_edge = [self.matrix[row][col] for row in range(square_size, square_size + 1) if
                          self.matrix[row][col]] + \
                         [self.matrix[row][col + 1] for row in range(square_size) if self.matrix[row][col + 1]]
-        
+
         bottom_left_corner = [self.matrix[row][limit - col] for row in range(square_size) if
                               self.matrix[row][limit - col]]
-        
+
         bottom_left_edge = [self.matrix[row][limit - col] for row in range(square_size, square_size + 1) if
                             self.matrix[row][limit - col]] + \
                            [self.matrix[row][limit - col - 1] for row in range(square_size) if
                             self.matrix[row][limit - col - 1]]
-        
+
         bottom_right_corner = [self.matrix[limit - row][limit - col] for row in range(square_size) if
                                self.matrix[limit - row][limit - col]]
-        
+
         bottom_right_edge = [self.matrix[limit - row][limit - col] for row in range(square_size, square_size + 1)
                              if self.matrix[limit - row][limit - col]] + \
                             [self.matrix[limit - row][limit - col - 1] for row in range(square_size) if
                              self.matrix[limit - row][limit - col - 1]]
-        
+
         top_right_corner = [self.matrix[limit - row][col] for row in range(square_size) if
                             self.matrix[limit - row][col]]
-        
+
         top_right_edge = [self.matrix[limit - row][col] for row in range(square_size, square_size + 1) if
                           self.matrix[limit - row][col]] + \
                          [self.matrix[limit - row][col + 1] for row in range(square_size) if
                           self.matrix[limit - row][col + 1]]
-        
+
         squares_people = top_left_corner + bottom_left_corner + bottom_right_corner + top_right_corner
         squares_edge_people = top_left_edge + bottom_left_edge + bottom_right_edge + top_right_edge
 

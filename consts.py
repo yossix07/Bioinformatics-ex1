@@ -7,7 +7,8 @@ S1 = 0.3
 S2 = 0.25
 S3 = 0.1
 S4 = 0.35
-mode = "fastSpread"
+modeSlow = "slowSpread"
+modeFast = "fastSpread"
 visual = "belief"
 wrap_around = False
 
