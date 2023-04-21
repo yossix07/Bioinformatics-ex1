@@ -37,7 +37,7 @@ class GridWindow:
 
         input_boxes = [pygame.Rect(starting_x, starting_y + i * margin, input_width, input_height) for i in range(len(self.input_values))]
 
-        wrap_around_check_box = pygame.Rect(starting_x + int(66 * min(self.width, self.height) / 1080), starting_y + len(input_boxes) * margin, int(50 * min(self.width, self.height) / 1080), int(50 * min(self.width, self.height) / 1080))
+        wrap_around_check_box = pygame.Rect(starting_x + int(100 * min(self.width, self.height) / 1080), starting_y + len(input_boxes) * margin, int(50 * min(self.width, self.height) / 1080), int(50 * min(self.width, self.height) / 1080))
         start_button = pygame.Rect(starting_x, starting_y + (len(input_boxes) + 2) * margin, int(200 * min(self.width, self.height) / 1080), int(50 * min(self.width, self.height) / 1080))
 
         labels = [
@@ -83,7 +83,7 @@ class GridWindow:
 
             # Draw the labels
             for i, label in enumerate(labels):
-                self.screen.blit(label, (100, 200 + 50 * i))
+                self.screen.blit(label, (100, starting_y + margin * i))
             
 
             # Draw the start button
