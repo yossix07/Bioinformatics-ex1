@@ -14,7 +14,6 @@ class Person:
         self.location = location
         self.max_x = max_x
         self.max_y = max_y
-        #self.believed_to_rumor
 
     # Sets the original and current belief level of the person.
     def set_belief(self, belief):
