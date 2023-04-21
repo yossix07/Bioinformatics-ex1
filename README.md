@@ -1,6 +1,6 @@
 # Bioinformatics-ex1
 
-** Getting Started
+## Getting Started
 - clone this repositoy.
 - make sure you have python installed on you machine.
 - install the required dependencies in your terminal:
