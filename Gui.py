@@ -24,21 +24,21 @@ class GridWindow:
     # dispaly menu and handle menu events
     def run_menu(self):
         # set up the font for the title
-        title_font = pygame.font.SysFont(None, 55)
+        title_font = pygame.font.SysFont(None, int(55 * min(self.width, self.height) / 1080))
         title_text = title_font.render("Welcome To Rumor Spread Simulator!", True, consts.GREEN)
 
-        starting_x = 200
-        starting_y = 200
-        input_width = 200
-        input_height = 32
-        margin = 50
+        starting_x = int(200 * min(self.width, self.height) / 1080)
+        starting_y = int(200 * min(self.width, self.height) / 1080)
+        input_width = int(200 * min(self.width, self.height) / 1080)
+        input_height = int(32 * min(self.width, self.height) / 1080)
+        margin = int(50 * min(self.width, self.height) / 1080)
 
-        FONT = pygame.font.Font(None, 32)
+        FONT = pygame.font.Font(None, int(32 * min(self.width, self.height) / 1080))
 
-        input_boxes = [ pygame.Rect(starting_x, starting_y + i * margin, input_width, input_height) for i in range(len(self.input_values)) ]
+        input_boxes = [pygame.Rect(starting_x, starting_y + i * margin, input_width, input_height) for i in range(len(self.input_values))]
 
-        wrap_around_check_box = pygame.Rect(starting_x + 66, starting_y + len(input_boxes) * margin, 50, 50)
-        start_button = pygame.Rect(starting_x, starting_y + (len(input_boxes) + 2) * margin, 200, 50)
+        wrap_around_check_box = pygame.Rect(starting_x + int(66 * min(self.width, self.height) / 1080), starting_y + len(input_boxes) * margin, int(50 * min(self.width, self.height) / 1080), int(50 * min(self.width, self.height) / 1080))
+        start_button = pygame.Rect(starting_x, starting_y + (len(input_boxes) + 2) * margin, int(200 * min(self.width, self.height) / 1080), int(50 * min(self.width, self.height) / 1080))
 
         labels = [
             FONT.render("P:", True, consts.BLACK),
