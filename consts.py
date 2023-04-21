@@ -9,7 +9,7 @@ S3 = 0.1
 S4 = 0.35
 modeSlow = "slowSpread"
 modeFast = "fastSpread"
-visual = "belief"
+visual = "has_rumor"
 wrap_around = False
 
 WHITE = (255, 255, 255)
